@@ -61,18 +61,12 @@ php artisan view:clear
 
 ## CONFIG URL
 
-* hosts
-
-- Link: C:\Windows\System32\drivers\etc\hosts
-- Content: 
+* C:\Windows\System32\drivers\etc\hosts
 ```bash 
 127.0.0.1 dev.mybase.vn
 ```
 
-* httpd-vhosts.conf
-
-- Link: C:\xampp\apache\conf\extra\httpd-vhosts.conf
-- Content:
+* C:\xampp\apache\conf\extra\httpd-vhosts.conf
 ```bash 
 <VirtualHost *:80>
     DocumentRoot "{LOCAL_HTDOCS}\mybase\public"
