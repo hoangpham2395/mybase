@@ -21,6 +21,13 @@ class AdminController extends BackendController
 		$this->setAlias($admin->getTable());
 		parent::__construct();
 	}
+
+	protected function _prepareCreate()
+    {
+        $params['role_type'] = getConfig('role_type');
+        $params = array_merge($params, parent::_prepareCreate());
+        return $params;
+    }
 }
 
 ?>

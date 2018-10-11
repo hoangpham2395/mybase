@@ -19,29 +19,52 @@ class BackendController extends BaseController
 
     public function __construct()
     {
+        $this->getRepository()->setSortField($this->_sortField);
+        $this->getRepository()->setSortType($this->_sortType);
+        $this->getRepository()->setPerPage($this->_perPage);
     }
 
     protected function _prepareData()
-    {
-        return [];
-    }
-
-    protected function _prepareIndex()
     {
         $params['alias'] = $this->getAlias();
         return $params;
     }
 
-    protected function _beforeIndex() 
+    protected function _prepareIndex()
     {
-        $this->getRepository()->setSortField($this->_sortField);
-        $this->getRepository()->setSortType($this->_sortType);
-        $this->getRepository()->setPerPage($this->_perPage);
+        $params = [];
+        $params = array_merge($params, $this->_prepareData());
+        return $params;
     }
-	
+
+    protected function _prepareCreate()
+    {
+        $params = [];
+        $params = array_merge($params, $this->_prepareData());
+        return $params;
+    }
+
+    protected function _prepareEdit()
+    {
+        $params = [];
+        $params = array_merge($params, $this->_prepareData());
+        return $params;
+    }
+
+    protected function _prepareStore()
+    {
+        $params['ins_id'] = 1;
+        return $params;
+    }
+
+    protected function _prepareUpdate()
+    {
+        $params['upd_id'] = 1;
+        return $params;
+    }
+
 	public function index() 
 	{
-		$this->_beforeIndex();
         $params = $this->_prepareIndex();
         $entities = $this->getRepository()->getListForBackend(Input::all());
         return view('backend.' . $this->getAlias() . '.index', compact('entities', 'params'));
@@ -54,7 +77,8 @@ class BackendController extends BaseController
 
 	public function create() 
 	{
-
+	    $params = $this->_prepareCreate();
+	    return view('backend.' . $this->getAlias() . '.create', compact('params'));
 	}
 
 	public function edit($id) 
@@ -64,7 +88,19 @@ class BackendController extends BaseController
 
 	public function store(Request $request) 
 	{
+        $data = $request->all();
 
+        // Validate
+        $valid = $this->getValidator()->validateCreate($data);
+        if (!$valid) {
+            return redirect()->back()->withErrors($this->getValidator()->errors())->withInput();
+        }
+
+        // Insert
+        $data = array_merge($data, $this->_prepareStore());
+        $this->getRepository()->create($data);
+        Session::flash('create_success', getMessaage('create_success'));
+        return redirect()->route($this->getAlias() . '.index');
 	}
 
 	public function update(Request $request, $id) 
