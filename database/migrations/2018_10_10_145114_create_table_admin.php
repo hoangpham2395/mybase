@@ -19,7 +19,7 @@ class CreateTableAdmin extends Migration
             $table->string('email', 256);
             $table->string('password', 64);
             $table->date('birth_day');
-            $table->string('avatar');
+            $table->string('avatar')->nullable();
             $table->string('role_type', 32);
             $table->integer('ins_id')->nullable();
             $table->integer('upd_id')->nullable();

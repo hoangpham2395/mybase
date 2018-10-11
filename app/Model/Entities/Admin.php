@@ -2,6 +2,7 @@
 
 namespace App\Model\Entities;
 
+use App\Model\Presenters\AdminPresenter;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Hash;
 class Admin extends Authenticatable
 {
 	use Notifiable;
+	use AdminPresenter;
 
 	protected $table = 'admin';
 	protected $primaryKey = 'id';

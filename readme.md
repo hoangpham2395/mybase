@@ -7,8 +7,6 @@
 * PHP: 7.0
 * Laravel: 5.7 
 * Composer: 1.4.1
-* Collective: 5.4 
-* l5-repository
 
 ## TEMPLATE
 
@@ -57,6 +55,16 @@ DB_PASSWORD=secret
 php artisan cache:clear
 php artisan config:clear
 php artisan view:clear
+```
+
+* Install Form collective 5.4.0
+```bash
+composer require "laravelcollective/html":"^5.4.0"
+```
+
+* Install L5-Repository (Prettus)
+```bash
+composer require prettus/l5-repository
 ```
 
 ## CONFIG URL

@@ -6,9 +6,10 @@ trait AdminPresenter
 {
 	public function getAvatar() 
 	{
-		if (!$this->avatar || !file_exists(asset($this->avatar))) {
-			return '<img src="' . getNoImage() . '">';
-		}
+	    $input = '<img src="';
+		$url = (!$this->avatar || !file_exists(asset($this->avatar))) ? getNoImage() : asset($this->avatar);
+		$input .= $url . '" height="100">';
+		return $input;
 	}	
 }
 ?>
