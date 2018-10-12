@@ -2,6 +2,8 @@
 namespace App\Repositories\Base;
 
 use Prettus\Repository\Eloquent\BaseRepository;
+use Prettus\Repository\Events\RepositoryEntityCreated;
+use Prettus\Repository\Events\RepositoryEntityUpdated;
 
 /**
  * 
@@ -67,6 +69,36 @@ class CustomRepository extends BaseRepository
 		})
 		->paginate($this->getPerPage());
 	}
+
+	public function findById($id)
+    {
+        return $this->findWhere(['id' => $id])->first();
+    }
+
+	// Custom create form BaseRepository in L5
+    public function create(array $attributes)
+    {
+        $model = $this->model->newInstance($attributes);
+        $model->save();
+        $this->resetModel();
+
+        event(new RepositoryEntityCreated($this, $model));
+
+        return $this->parserResult($model);
+    }
+
+    // Custom update form BaseRepository in L5
+    public function update(array $attributes, $id)
+    {
+        $model = $this->model->findOrFail($id);
+        $model->fill($attributes);
+        $model->save();
+        $this->resetModel();
+
+        event(new RepositoryEntityUpdated($this, $model));
+
+        return $this->parserResult($model);
+    }
 }
 
 ?>

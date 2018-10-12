@@ -69,7 +69,7 @@
                 <div class="fileinput fileinput-new" data-provides="fileinput">
                     @if (isset($entity))
                         <div class="fileinput-new" style="width: 200px; height: 200px;">
-                            <img src="{{ $entity->getUrlAvatar() }}" alt="Avatar">
+                            <img width="200" src="{{ $entity->getUrlAvatar() }}" alt="Avatar">
                         </div>
                     @endif
                     <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 250px; max-height: 200px;"></div>

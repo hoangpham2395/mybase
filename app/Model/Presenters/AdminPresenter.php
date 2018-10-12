@@ -10,6 +10,11 @@ trait AdminPresenter
 		$url = (!$this->avatar || !file_exists(asset($this->avatar))) ? getNoImage() : asset($this->avatar);
 		$input .= $url . '" height="100">';
 		return $input;
-	}	
+	}
+
+	public function getUrlAvatar()
+    {
+        return (!$this->avatar || !file_exists(asset($this->avatar))) ? getNoImage() : asset($this->avatar);
+    }
 }
 ?>

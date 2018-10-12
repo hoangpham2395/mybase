@@ -46,7 +46,7 @@ class BackendController extends BaseController
 
     protected function _prepareEdit()
     {
-        $params = [];
+        $params['alias'] = $this->getAlias();
         $params = array_merge($params, $this->_prepareData());
         return $params;
     }
@@ -83,7 +83,9 @@ class BackendController extends BaseController
 
 	public function edit($id) 
 	{
-
+        $params = $this->_prepareEdit();
+        $entity = $this->getRepository()->findById($id);
+        return view('backend.' . $this->getAlias() . '.edit', compact(['entity', 'params']));
 	}
 
 	public function store(Request $request) 
@@ -96,16 +98,44 @@ class BackendController extends BaseController
             return redirect()->back()->withErrors($this->getValidator()->errors())->withInput();
         }
 
-        // Insert
+        // Create
         $data = array_merge($data, $this->_prepareStore());
-        $this->getRepository()->create($data);
-        Session::flash('create_success', getMessaage('create_success'));
-        return redirect()->route($this->getAlias() . '.index');
+        DB::beginTransaction();
+        try {
+            $this->getRepository()->create($data);
+            DB::commit();
+            Session::flash('success', getMessaage('create_success'));
+            return redirect()->route($this->getAlias() . '.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
+        // Create failed
+        return redirect()->route($this->getAlias() . '.index')->withErrors(['create_failed' => getMessaage('create_failed')]);
 	}
 
 	public function update(Request $request, $id) 
 	{
+        $data = $request->all();
 
+        // Validate
+        $valid = $this->getValidator()->validateUpdate($data, $id);
+        if (!$valid) {
+            return redirect()->back()->withErrors($this->getValidator()->errors())->withInput();
+        }
+
+        // Update
+        $data = array_merge($data, $this->_prepareUpdate());
+        DB::beginTransaction();
+        try {
+            $this->getRepository()->update($data, $id);
+            DB::commit();
+            Session::flash('success', getMessaage('update_success'));
+            return redirect()->route($this->getAlias() . '.index');
+        } catch (\Exception $e) {
+            DB::rollBack();
+        }
+        // Update failed
+        return redirect()->route($this->getAlias() . '.index')->withErrors(['update_failed' => getMessaage('update_failed')]);
 	}
 
 	public function destroy($id) 

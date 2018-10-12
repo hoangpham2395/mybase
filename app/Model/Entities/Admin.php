@@ -8,18 +8,20 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Model\Scopes\Base\BaseScope;
 use Illuminate\Support\Facades\Hash;
+use App\Model\Base\Auth;
 
 /**
  * 
  */
-class Admin extends Authenticatable
+class Admin extends Auth
 {
 	use Notifiable;
 	use AdminPresenter;
 
 	protected $table = 'admin';
 	protected $primaryKey = 'id';
-	protected $fillable = ['name', 'email', 'password', 'birth_day', 'avatar', 'role_type', 'ins_id', 'upd_id', 'del_flag']; 
+	protected $fillable = ['name', 'email', 'password', 'birth_day', 'avatar', 'role_type', 'ins_id', 'upd_id', 'del_flag'];
+	protected $_alias = 'admin';
 
 	// Add global scope
 	protected static function boot() 

@@ -12,8 +12,6 @@ use App\Model\Entities\Admin;
  */
 class AdminController extends BackendController
 {
-	protected $alias = 'admin';
-
 	public function __construct(AdminRepository $adminRepository, AdminValidator $adminValidator, Admin $admin) 
 	{
 		$this->setRepository($adminRepository);
@@ -26,6 +24,13 @@ class AdminController extends BackendController
     {
         $params['role_type'] = getConfig('role_type');
         $params = array_merge($params, parent::_prepareCreate());
+        return $params;
+    }
+
+    protected function _prepareEdit()
+    {
+        $params['role_type'] = getConfig('role_type');
+        $params = array_merge($params, parent::_prepareEdit());
         return $params;
     }
 }
