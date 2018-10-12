@@ -14,14 +14,14 @@ class AdminValidator extends BaseValidator {
             'confirm_password' => 'required_with:password|same:password|min:6|max:8',
             'birth_day' => 'required',
             'role_type' => 'required',
-            'avatar' => 'nullable|mimes:jpeg,png,gif'
+            'avatar' => 'nullable|mimes:jpeg,png,gif,jpg'
         ],
         ValidatorInterface::RULE_UPDATE => [
             'name' => 'required',
             'email'  => 'required|email|unique:admin,email, :id',
             'birth_day' => 'required',
             'role_type' => 'required',
-            'avatar' => 'nullable|mimes:jpeg,png,gif'
+            'avatar' => 'nullable|mimes:jpeg,png,gif,jpg'
         ]
    ];
 

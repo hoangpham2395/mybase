@@ -22,8 +22,8 @@
                     <div class="box-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                {!! Form::open(['route' => 'admin.store', 'method' => 'POST', 'file' => true]) !!}
-                                @include('backend.admin._form')
+                                {!! Form::open(['route' => 'admin.store', 'method' => 'POST', 'files' => true]) !!}
+                                    @include('backend.admin._form')
                                 {!! Form::close() !!}
                             </div>
                         </div>

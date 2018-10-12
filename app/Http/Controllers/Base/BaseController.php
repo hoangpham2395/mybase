@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Base;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 
 /**
  * 
@@ -41,6 +42,11 @@ class BaseController extends Controller
     public function getAlias() 
     {
         return $this->_alias;
+    }
+
+    public function uploadToTmp($fileName, $link) 
+    {
+        Storage::disks('tmp')->put($fileName, $link);
     }
 }
 

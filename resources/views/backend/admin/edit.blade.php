@@ -22,8 +22,8 @@
                     <div class="box-body">
                         <div class="row">
                             <div class="col-sm-12">
-                                {!! Form::model($entity, ['route' => ['admin.update', $entity->id], 'method' => 'PATCH', 'file' => true]) !!}
-                                @include('backend.admin._form')
+                                {!! Form::model($entity, ['route' => ['admin.update', $entity->id], 'method' => 'PATCH', 'files' => true]) !!}
+                                    @include('backend.admin._form')
                                 {!! Form::close() !!}
                             </div>
                         </div>
