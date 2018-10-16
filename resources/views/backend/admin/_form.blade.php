@@ -65,20 +65,7 @@
     <div class="col-md-12">
         <div class="form-group">
             {!! Form::label('avatar', 'Avatar:') !!}
-            <div class="input-group">
-                <div class="fileinput fileinput-new" data-provides="fileinput">
-                    @if (isset($entity))
-                        <div class="fileinput-new" style="width: 200px; height: 200px;">
-                            <img width="200" src="{{ $entity->getUrlAvatar() }}" alt="Avatar">
-                        </div>
-                    @endif
-                    <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 250px; max-height: 200px;"></div>
-                    <div>
-                        <span class="btn btn-default btn-file"><span class="fileinput-new">Select image</span><span class="fileinput-exists">Change</span><input type="file" name="avatar"></span>
-                        <a href="#" class="btn btn-default fileinput-exists" data-dismiss="fileinput">Remove</a>
-                    </div>
-                </div>
-            </div>
+            @include('layouts.backend.upload_image', ['image' => 'avatar'])
         </div>
     </div>
 </div>

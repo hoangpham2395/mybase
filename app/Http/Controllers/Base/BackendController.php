@@ -92,9 +92,22 @@ class BackendController extends BaseController
 	{
         $data = $request->all();
 
+        // Get value of file input
+        $hiddenName = getConstant('FILE_INPUT_NAME');
+        $fileField = ($data[$hiddenName]) ? $data[$hiddenName] : $hiddenName;
+
+        // Move file to tmp uploads 
+        if ($request->hasFile($fileField)) {
+            $fileName = $request->file($fileField)->getClientOriginalName();
+            $request->file($fileField)->store('tmp');
+        }
+
         // Validate
         $valid = $this->getValidator()->validateCreate($data);
         if (!$valid) {
+            if ($request->hasFile($fileField)) {
+                Session::flash($this->getAlias() . '_' . $hiddenName, getTmpUrl() . '/' . $fileName);
+            }
             return redirect()->back()->withErrors($this->getValidator()->errors())->withInput();
         }
 

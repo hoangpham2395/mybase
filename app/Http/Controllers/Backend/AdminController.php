@@ -6,6 +6,7 @@ use App\Http\Controllers\Base\BackendController;
 use App\Repositories\AdminRepository;
 use App\Validators\AdminValidator;
 use App\Model\Entities\Admin;
+use Illuminate\Http\Request;
 
 /**
  * 
@@ -33,6 +34,17 @@ class AdminController extends BackendController
         $params = array_merge($params, parent::_prepareEdit());
         return $params;
     }
+
+    // public function store(Request $request) 
+    // {
+    //     if ($request->hasFile('avatar')) {
+    //         // $fileName = $request->file('avatar')->getClientOriginalName();
+    //         // $link = file_get_contents($request->file('avatar')->getRealPath());
+    //         // $this->uploadToTmp($fileName, $link);
+    //         $request->avatar->store('admin', 'tmp');
+    //     }
+    //     parent::store($request);
+    // } 
 }
 
 ?>

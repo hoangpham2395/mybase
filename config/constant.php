@@ -6,5 +6,6 @@ return [
     'DEL_FLAG' => 0,
     'SORT_FIELD' => 'id',
     'SORT_TYPE' => 'DESC',
+    'FILE_INPUT_NAME' => 'file_input',
 ];
 ?>

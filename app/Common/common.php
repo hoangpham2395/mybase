@@ -29,4 +29,9 @@ function getNoImage()
 {
 	return asset(getConfig('no_image'));
 }
+
+function getTmpUrl() 
+{
+	return asset(getConfig('url_tmp'));
+}
 ?>
