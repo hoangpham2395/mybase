@@ -1,6 +1,6 @@
 @php 
     $image = ($image) ? $image : 'image';
-    $sessionImage = $params['alias'] . '_' . getConstant('FILE_INPUT_NAME');
+    $sessionImage = 'current_file_name';
     $urlImage = null;
 
     if (isset($entity)) {
@@ -8,15 +8,15 @@
     }
 
     if (Session::has($sessionImage)) {
-        $urlImage = Session::get($sessionImage);
+        $urlImage = getTmpUrl() . '/' . Session::get($sessionImage);
     }
 @endphp
 
 <div class="input-group">
     <div class="fileinput fileinput-new" data-provides="fileinput">
         @if ($urlImage)
-        <div class="fileinput-new" style="width: 200px; height: 200px;">
-            <img width="200" src="{{ $urlImage }}" alt="Avatar">
+        <div class="fileinput-new thumbnail" style="max-width: 250px; max-height: 200px;">
+            <img src="{{ $urlImage }}" alt="Avatar">
         </div>
         @endif
         <div class="fileinput-preview fileinput-exists thumbnail" style="max-width: 250px; max-height: 200px;"></div>

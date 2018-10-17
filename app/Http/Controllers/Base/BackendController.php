@@ -7,6 +7,7 @@ use App\Http\Controllers\Base\BaseController;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Facades\DB;
 use Session;
+use Storage;
 
 /**
  * 
@@ -53,13 +54,25 @@ class BackendController extends BaseController
 
     protected function _prepareStore()
     {
+        // Get current admin
         $params['ins_id'] = 1;
+        // Get file input if exist
+        if (Session::has('current_file_field')) {
+            $fileName = date('YmdHis') . '_' . Session::get('current_file_name');
+            $params[Session::get('current_file_field')] = getConfig('url_media'). '/' .$this->getAlias() . '/' . $fileName;
+        }
         return $params;
     }
 
     protected function _prepareUpdate()
     {
+        // Get current admin
         $params['upd_id'] = 1;
+        // Get file input if exist
+        if (Session::has('current_file_field')) {
+            $fileName = date('YmdHis') . '_' . Session::get('current_file_name');
+            $params[Session::get('current_file_field')] = getConfig('url_media'). '/' .$this->getAlias() . '/' . $fileName;
+        }
         return $params;
     }
 
@@ -92,22 +105,12 @@ class BackendController extends BaseController
 	{
         $data = $request->all();
 
-        // Get value of file input
-        $hiddenName = getConstant('FILE_INPUT_NAME');
-        $fileField = ($data[$hiddenName]) ? $data[$hiddenName] : $hiddenName;
-
-        // Move file to tmp uploads 
-        if ($request->hasFile($fileField)) {
-            $fileName = $request->file($fileField)->getClientOriginalName();
-            $request->file($fileField)->store('tmp');
-        }
+        // Upload file to tmp folder if exist
+        $this->_uploadToTmp($request);
 
         // Validate
         $valid = $this->getValidator()->validateCreate($data);
         if (!$valid) {
-            if ($request->hasFile($fileField)) {
-                Session::flash($this->getAlias() . '_' . $hiddenName, getTmpUrl() . '/' . $fileName);
-            }
             return redirect()->back()->withErrors($this->getValidator()->errors())->withInput();
         }
 
@@ -117,18 +120,25 @@ class BackendController extends BaseController
         try {
             $this->getRepository()->create($data);
             DB::commit();
+            // Move file to medias if exist
+            $this->_moveToMedias($data);
+
             Session::flash('success', getMessaage('create_success'));
             return redirect()->route($this->getAlias() . '.index');
         } catch (\Exception $e) {
             DB::rollBack();
         }
         // Create failed
+        $this->_deleteFileInTmp();
         return redirect()->route($this->getAlias() . '.index')->withErrors(['create_failed' => getMessaage('create_failed')]);
 	}
 
 	public function update(Request $request, $id) 
 	{
         $data = $request->all();
+
+        // Upload file to tmp folder if exist
+        $this->_uploadToTmp($request);
 
         // Validate
         $valid = $this->getValidator()->validateUpdate($data, $id);
@@ -142,12 +152,15 @@ class BackendController extends BaseController
         try {
             $this->getRepository()->update($data, $id);
             DB::commit();
+            // Move file to medias if exist
+            $this->_moveToMedias($data);
             Session::flash('success', getMessaage('update_success'));
             return redirect()->route($this->getAlias() . '.index');
         } catch (\Exception $e) {
             DB::rollBack();
         }
         // Update failed
+        $this->_deleteFileInTmp();
         return redirect()->route($this->getAlias() . '.index')->withErrors(['update_failed' => getMessaage('update_failed')]);
 	}
 
@@ -155,5 +168,57 @@ class BackendController extends BaseController
 	{
 
 	}
+
+    protected function _uploadToTmp($request) 
+    {
+        // Get value of file input
+        $hiddenName = getConstant('FILE_INPUT_NAME');
+        $fileField = $request->input($hiddenName) ? $request->input($hiddenName) : $hiddenName; 
+
+        // Check exist
+        if (!$request->hasFile($fileField)) {
+            return;
+        }
+
+        $fileName = $request->file($fileField)->getClientOriginalName();
+        // Upload file to tmp folder
+        try {
+            Storage::disk('tmp')->put($fileName, file_get_contents($request->file($fileField)->getRealPath()));
+            
+            Session::put('current_file_name', $fileName);
+            Session::put('current_file_field', $fileField);
+        } catch(\Exception $e) {
+
+        }
+    }
+
+    protected function _moveToMedias($data) 
+    {
+        if (!Session::has('current_file_field') || !$data[Session::get('current_file_field')]) {
+            return; 
+        }
+
+        $fileName = Session::get('current_file_name');
+        $newFileName = $data[Session::get('current_file_field')];
+        // Get file name same _prepareStore
+        $newFileName = array_reverse(explode('/', $newFileName))[0];
+        Storage::move(getConfig('url_tmp') . '/' . $fileName, getConfig('url_media'). '/' . ($this->getAlias()) . '/' . $newFileName);
+
+        // Delete session
+        Session::forget('current_file_field');
+        Session::forget('current_file_name');
+    }
+
+    protected function _deleteFileInTmp() 
+    {
+        if (!Session::has('current_file_field')) {
+            return;
+        }
+        Storage::disk('tmp')->delete(Session::get('current_file_name'));
+
+        // Delete session
+        Session::forget('current_file_field');
+        Session::forget('current_file_name');
+    }
 }
 ?>

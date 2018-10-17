@@ -34,4 +34,13 @@ function getTmpUrl()
 {
 	return asset(getConfig('url_tmp'));
 }
+
+function getMediaUrl($alias = null) 
+{
+	$url = asset(getConfig('url_media'));
+	if (!$alias) {
+		return $url;
+	}
+	return $url . '/' . $alias;
+}
 ?>

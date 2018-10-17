@@ -4,17 +4,20 @@ namespace App\Model\Presenters;
 
 trait AdminPresenter 
 {
-	public function getAvatar() 
-	{
-	    $input = '<img src="';
-		$url = (!$this->avatar || !file_exists(asset($this->avatar))) ? getNoImage() : asset($this->avatar);
-		$input .= $url . '" height="100">';
-		return $input;
-	}
-
 	public function getUrlAvatar()
     {
         return (!$this->avatar || !file_exists(asset($this->avatar))) ? getNoImage() : asset($this->avatar);
+    }
+
+    public function getAvatar() 
+	{
+		return '<img src="' . $this->getUrlAvatar() . '" height="100">';
+	}
+
+    public function getRoleType() 
+    {
+    	$roleTypes = getConfig('role_type');
+    	return $roleTypes[$this->role_type];
     }
 }
 ?>

@@ -84,7 +84,7 @@
                                         <td>{{ $entity->name }}</td>
                                         <td>{{ $entity->email }}</td>
                                         <td>{{ $entity->birth_day }}</td>
-                                        <td>{{ $entity->role_type }}</td>
+                                        <td>{{ $entity->getRoleType() }}</td>
                                         <td>{!! $entity->getAvatar() !!}</td>
                                         <td class="text-center">
                                             <a href="{{route('admin.edit', $entity->id)}}" class="btn btn-sm btn-primary">

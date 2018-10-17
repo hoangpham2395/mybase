@@ -66,12 +66,12 @@ return [
 
         'tmp' => [
             'driver' => 'local',
-            'root' => public_path('tmp_uploads'),
+            'root' => public_path() . '/tmp_uploads',
         ],
 
         'uploads' => [
             'driver' => 'local',
-            'root' => public_path('media'),
+            'root' => public_path() . '/media',
         ],
 
         'logs' => [
