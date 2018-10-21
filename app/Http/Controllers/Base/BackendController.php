@@ -233,7 +233,7 @@ class BackendController extends BaseController
         Session::forget('current_file_name');
     }
 
-    protected function _deleteFile($id) 
+    protected function _deleteFileIfExist($id) 
     {
         return true;
     }
