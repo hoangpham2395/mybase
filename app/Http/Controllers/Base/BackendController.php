@@ -52,6 +52,13 @@ class BackendController extends BaseController
         return $params;
     }
 
+    protected function _prepareShow()
+    {
+        $params['alias'] = $this->getAlias();
+        $params = array_merge($params, $this->_prepareData());
+        return $params;
+    }
+
     protected function _prepareStore()
     {
         // Get current admin
@@ -85,7 +92,9 @@ class BackendController extends BaseController
 
 	public function show($id) 
 	{
-
+        $params = $this->_prepareShow();
+        $entity = $this->getRepository()->findById($id);
+        return view('backend.' . $this->getAlias() . '.show', compact('entity', 'params'));
 	}
 
 	public function create() 
