@@ -119,9 +119,9 @@ class BackendController extends BaseController
         DB::beginTransaction();
         try {
             $this->getRepository()->create($data);
-            DB::commit();
             // Move file to medias if exist
             $this->_moveToMedias($data);
+            DB::commit();
 
             Session::flash('success', getMessaage('create_success'));
             return redirect()->route($this->getAlias() . '.index');
@@ -151,9 +151,9 @@ class BackendController extends BaseController
         DB::beginTransaction();
         try {
             $this->getRepository()->update($data, $id);
-            DB::commit();
             // Move file to medias if exist
             $this->_moveToMedias($data);
+            DB::commit();
             Session::flash('success', getMessaage('update_success'));
             return redirect()->route($this->getAlias() . '.index');
         } catch (\Exception $e) {
@@ -181,10 +181,11 @@ class BackendController extends BaseController
         }
 
         $fileName = $request->file($fileField)->getClientOriginalName();
+        $conntentFile = file_get_contents($request->file($fileField)->getRealPath());
         // Upload file to tmp folder
         try {
-            Storage::disk('tmp')->put($fileName, file_get_contents($request->file($fileField)->getRealPath()));
-            
+            Storage::disk('tmp')->put($fileName, $conntentFile);
+            // Set sesion of file
             Session::put('current_file_name', $fileName);
             Session::put('current_file_field', $fileField);
         } catch(\Exception $e) {
@@ -198,11 +199,10 @@ class BackendController extends BaseController
             return; 
         }
 
-        $fileName = Session::get('current_file_name');
-        $newFileName = $data[Session::get('current_file_field')];
+        $oldPath = getConfig('url_tmp') . '/' . Session::get('current_file_name');
+        $newPath = $data[Session::get('current_file_field')]; 
         // Get file name same _prepareStore
-        $newFileName = array_reverse(explode('/', $newFileName))[0];
-        Storage::move(getConfig('url_tmp') . '/' . $fileName, getConfig('url_media'). '/' . ($this->getAlias()) . '/' . $newFileName);
+        Storage::disk('public_path')->move($oldPath, $newPath);
 
         // Delete session
         Session::forget('current_file_field');

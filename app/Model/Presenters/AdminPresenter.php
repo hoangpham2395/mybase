@@ -6,7 +6,7 @@ trait AdminPresenter
 {
 	public function getUrlAvatar()
     {
-        return (!$this->avatar || !file_exists(asset($this->avatar))) ? getNoImage() : asset($this->avatar);
+        return (!$this->avatar || !file_exists(public_path($this->avatar))) ? getNoImage() : asset($this->avatar);
     }
 
     public function getAvatar() 

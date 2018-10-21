@@ -78,6 +78,11 @@ return [
             'driver' => 'local',
             'root' => storage_path('logs'), 
         ],
+
+        'public_path' => [
+            'driver' => 'local',
+            'root' => public_path(),
+        ], 
     ],
 
 ];
