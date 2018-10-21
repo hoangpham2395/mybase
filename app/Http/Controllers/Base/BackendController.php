@@ -106,7 +106,7 @@ class BackendController extends BaseController
         $data = $request->all();
 
         // Upload file to tmp folder if exist
-        $this->_uploadToTmp($request);
+        $this->_uploadToTmpIfExist($request);
 
         // Validate
         $valid = $this->getValidator()->validateCreate($data);
@@ -120,7 +120,7 @@ class BackendController extends BaseController
         try {
             $this->getRepository()->create($data);
             // Move file to medias if exist
-            $this->_moveToMedias($data);
+            $this->_moveToMediasIfExist($data);
             DB::commit();
 
             Session::flash('success', getMessaage('create_success'));
@@ -129,7 +129,7 @@ class BackendController extends BaseController
             DB::rollBack();
         }
         // Create failed
-        $this->_deleteFileInTmp();
+        $this->_deleteFileInTmpIfExist();
         return redirect()->route($this->getAlias() . '.index')->withErrors(['create_failed' => getMessaage('create_failed')]);
 	}
 
@@ -138,7 +138,7 @@ class BackendController extends BaseController
         $data = $request->all();
 
         // Upload file to tmp folder if exist
-        $this->_uploadToTmp($request);
+        $this->_uploadToTmpIfExist($request);
 
         // Validate
         $valid = $this->getValidator()->validateUpdate($data, $id);
@@ -152,7 +152,7 @@ class BackendController extends BaseController
         try {
             $this->getRepository()->update($data, $id);
             // Move file to medias if exist
-            $this->_moveToMedias($data);
+            $this->_moveToMediasIfExist($data);
             DB::commit();
             Session::flash('success', getMessaage('update_success'));
             return redirect()->route($this->getAlias() . '.index');
@@ -160,16 +160,28 @@ class BackendController extends BaseController
             DB::rollBack();
         }
         // Update failed
-        $this->_deleteFileInTmp();
+        $this->_deleteFileInTmpIfExist();
         return redirect()->route($this->getAlias() . '.index')->withErrors(['update_failed' => getMessaage('update_failed')]);
 	}
 
 	public function destroy($id) 
 	{
-
+        $data['del_flag'] = getConstant('DEL_FLAG.DELETED', 1);
+        $data['upd_id'] = 1;
+        DB::beginTransaction();
+        try {
+            $this->getRepository()->update($data, $id);
+            $this->_deleteFileIfExist();
+            DB::commit();
+            Session::flash('success', getMessaage('delete_success'));
+            return redirect()->route($this->getAlias() . '.index');
+        } catch(\Exception $e) {
+            DB::rollBack();
+        }
+        return redirect()->route($this->getAlias() . '.index')->withErrors(['delete_failed' => getMessaage('delete_failed')]);
 	}
 
-    protected function _uploadToTmp($request) 
+    protected function _uploadToTmpIfExist($request) 
     {
         // Get value of file input
         $hiddenName = getConstant('FILE_INPUT_NAME');
@@ -193,7 +205,7 @@ class BackendController extends BaseController
         }
     }
 
-    protected function _moveToMedias($data) 
+    protected function _moveToMediasIfExist($data) 
     {
         if (!Session::has('current_file_field') || !$data[Session::get('current_file_field')]) {
             return; 
@@ -209,7 +221,7 @@ class BackendController extends BaseController
         Session::forget('current_file_name');
     }
 
-    protected function _deleteFileInTmp() 
+    protected function _deleteFileInTmpIfExist() 
     {
         if (!Session::has('current_file_field')) {
             return;
@@ -219,6 +231,11 @@ class BackendController extends BaseController
         // Delete session
         Session::forget('current_file_field');
         Session::forget('current_file_name');
+    }
+
+    protected function _deleteFile($id) 
+    {
+        return true;
     }
 }
 ?>
