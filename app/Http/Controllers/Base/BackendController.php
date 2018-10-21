@@ -94,6 +94,10 @@ class BackendController extends BaseController
 	{
         $params = $this->_prepareShow();
         $entity = $this->getRepository()->findById($id);
+        // Check id
+        if (empty($entity)) {
+            return redirect()->route($this->getAlias() . '.index')->withErrors(['id_invalid' => getMessaage('id_invalid')]);
+        }
         return view('backend.' . $this->getAlias() . '.show', compact('entity', 'params'));
 	}
 
@@ -107,6 +111,10 @@ class BackendController extends BaseController
 	{
         $params = $this->_prepareEdit();
         $entity = $this->getRepository()->findById($id);
+        // Check id
+        if (empty($entity)) {
+            return redirect()->route($this->getAlias() . '.index')->withErrors(['id_invalid' => getMessaage('id_invalid')]);
+        }
         return view('backend.' . $this->getAlias() . '.edit', compact(['entity', 'params']));
 	}
 
@@ -144,6 +152,12 @@ class BackendController extends BaseController
 
 	public function update(Request $request, $id) 
 	{
+        // Check id
+        $entity = $this->getRepository()->findById($id);
+        if (empty($entity)) {
+            return redirect()->route($this->getAlias() . '.index')->withErrors(['id_invalid' => getMessaage('id_invalid')]);
+        }
+
         $data = $request->all();
 
         // Upload file to tmp folder if exist
@@ -175,6 +189,12 @@ class BackendController extends BaseController
 
 	public function destroy($id) 
 	{
+        // Check id
+        $entity = $this->getRepository()->findById($id);
+        if (empty($entity)) {
+            return redirect()->route($this->getAlias() . '.index')->withErrors(['id_invalid' => getMessaage('id_invalid')]);
+        }
+        // Delete
         $data['del_flag'] = getConstant('DEL_FLAG.DELETED', 1);
         $data['upd_id'] = 1;
         DB::beginTransaction();
@@ -187,6 +207,7 @@ class BackendController extends BaseController
         } catch(\Exception $e) {
             DB::rollBack();
         }
+        // Delete failed
         return redirect()->route($this->getAlias() . '.index')->withErrors(['delete_failed' => getMessaage('delete_failed')]);
 	}
 

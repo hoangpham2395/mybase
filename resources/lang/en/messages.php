@@ -18,6 +18,8 @@ return [
     'db_not_connect' => 'Db not connect.',
     'url_not_found' => 'URL not found.',
     'db_error' => 'Database error has occurred.',
-    'system_error' => 'system error has occurred',
+    'system_error' => 'system error has occurred.',
+
+    'id_invalid' => 'ID is invalid.',
 ];
 ?>
